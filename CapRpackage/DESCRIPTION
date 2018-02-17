@@ -1,0 +1,12 @@
+Package: CapRpackage
+Title: Access Data from the Comparative Agendas Project
+Version: 0.0001
+Authors@R: person("TestFirst", "TestLast", email = "first.last@example.com", role = c("aut", "cre"))
+Description: R package to access data and functionality from the Comparative Agendas Project at www.comparativeagendas.net.
+Depends: R (>= 3.4.3)
+License: What license is it under?
+Encoding: UTF-8
+LazyData: true
+RoxygenNote: 6.0.1
+Imports: 
+  RCurl
