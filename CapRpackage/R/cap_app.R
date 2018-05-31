@@ -27,12 +27,7 @@ cap_app <- function() {
                                  choices = allchoices,
                                  multiple = TRUE, selectize = TRUE)
       )),
-
-     # miniTabPanel("Map", icon = icon("map-o"),
-     #               miniContentPanel(padding = 0, leafletOutput("map", height = "100%")),
-     #               miniButtonBlock(actionButton("resetMap", "Reset"))
-     #  ),
-     miniTabPanel("Data", icon = icon("table"),
+      miniTabPanel("Data", icon = icon("table"),
                    miniContentPanel(tableOutput("table"))
       )
     )
