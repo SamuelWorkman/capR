@@ -14,6 +14,8 @@ cap_app <- function() {
     mutate(url = paste0("https://comparativeagendas.s3.amazonaws.com/datasetfiles/", datasetfilename),
            country_type = paste(Country, Type, sep = "_"))
 
+  allchoices <- c("Select all", unique(data$Country))
+
   ui <- miniPage(
     gadgetTitleBar("Select CAP data"),
     miniTabstripPanel(
@@ -22,7 +24,7 @@ cap_app <- function() {
                      selectInput(inputId = "category", label = "Select type of activity",
                                                 choices = unique(data$category)),
                      selectInput(inputId = "country", label = "Select country",
-                                 choices = unique(data$Country),
+                                 choices = allchoices,
                                  multiple = TRUE, selectize = TRUE)
       )),
 
@@ -36,14 +38,23 @@ cap_app <- function() {
     )
   )
 
-  server <- function(input, output) {
+  server <- function(input, output, session) {
 
-    re <- reactive({
-      subset(data, category==input$category & Country==input$country, select =
-               c("Country", "Type", "Units", "from", "to"))
+    observe({
+      if("Select all" %in% input$country)
+        selected_country=allchoices[-1] # choose all the choices _except_ "Select All"
+      else
+        selected_country=input$myselect # update the select input with choice selected by user
+      updateSelectInput(session, "country", selected = selected_country)
     })
 
-    output$table <- renderTable(re())
+      select_country <- reactive({
+      subset(data, category==input$category & Country==input$country, select =
+               c("Country", "Type", "Units", "from", "to"))
+      })
+
+
+    output$table <- renderTable(select_country())
 
     observeEvent(input$done, {
 
