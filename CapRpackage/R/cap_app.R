@@ -49,7 +49,7 @@ cap_app <- function() {
     })
 
       select_country <- reactive({
-      subset(data, category==input$category & Country==input$country, select =
+      subset(data, category==input$category & Country %in% input$country, select =
                c("Country", "Type", "Units", "from", "to"))
       })
 
@@ -76,4 +76,3 @@ cap_app <- function() {
 }
 
 trynew <- cap_app()
-
