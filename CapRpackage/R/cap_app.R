@@ -40,7 +40,7 @@ cap_app <- function() {
                      ))
       )),
       miniTabPanel("Data", icon = icon("table"),
-                   miniContentPanel(tableOutput("table"))
+                   miniContentPanel(DT::dataTableOutput("table"))
       )
     )
   )
@@ -56,7 +56,8 @@ cap_app <- function() {
       })
 
 
-    output$table <- renderTable(select_country())
+    output$table <- DT::renderDataTable(DT::datatable(select_country(),
+                                                      options = list(paging = FALSE)))
 
     observeEvent(input$done, {
 
