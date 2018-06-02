@@ -23,7 +23,7 @@ cap_app <- function() {
     miniTabstripPanel(
       miniTabPanel("Parameters", icon = icon("sliders"),
                    miniContentPanel(
-                     pickerInput(
+                     fillRow(pickerInput(
                        inputId = "category",
                        label = "Select type of activity",
                        choices = unique(data$category),
@@ -36,7 +36,7 @@ cap_app <- function() {
                        choices = unique(data$Country),
                        multiple = TRUE,
                        options = list(`actions-box` = TRUE)
-                     )
+                     ))
       )),
       miniTabPanel("Data", icon = icon("table"),
                    miniContentPanel(tableOutput("table"))
