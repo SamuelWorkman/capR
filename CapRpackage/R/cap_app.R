@@ -34,7 +34,7 @@ cap_app <- function() {
                      pickerInput(
                        inputId = "country",
                        label = "Select country",
-                       choices = unique(data$Country),
+                       choices = "", selected = "",
                        multiple = TRUE,
                        options = list(`actions-box` = TRUE)
                      ))
@@ -46,6 +46,11 @@ cap_app <- function() {
   )
 
   server <- function(input, output, session) {
+
+    observeEvent(
+      input$category,
+      updateSelectInput(session, "country", "country",
+                        choices = unique(data$Country[data$category==input$category])))
 
       select_country <- reactive({
       df <- data %>%
