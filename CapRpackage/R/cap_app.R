@@ -49,7 +49,7 @@ cap_app <- function() {
 
     observeEvent(
       input$category,
-      updateSelectInput(session, "country", "country",
+      updateSelectInput(session, "country", "Select country",
                         choices = unique(data$Country[data$category==input$category])))
 
       select_country <- reactive({
