@@ -1,6 +1,7 @@
 ## Only run examples in interactive R sessions
 
 library(shiny)
+library(shinyWidgets)
 library(miniUI)
 library(leaflet)
 library(ggplot2)
@@ -22,14 +23,20 @@ cap_app <- function() {
     miniTabstripPanel(
       miniTabPanel("Parameters", icon = icon("sliders"),
                    miniContentPanel(
-                     selectInput(inputId = "category",
-                                 label = "Select type of activity",
-                                 choices = allchoices_category,
-                                 multiple = TRUE, selectize = TRUE),
-                     selectInput(inputId = "country",
-                                 label = "Select country",
-                                 choices = allchoices_country,
-                                 multiple = TRUE, selectize = TRUE)
+                     pickerInput(
+                       inputId = "category",
+                       label = "Select type of activity",
+                       choices = unique(data$category),
+                       multiple = TRUE,
+                       options = list(`actions-box` = TRUE)
+                     ),
+                     pickerInput(
+                       inputId = "country",
+                       label = "Select country",
+                       choices = unique(data$Country),
+                       multiple = TRUE,
+                       options = list(`actions-box` = TRUE)
+                     )
       )),
       miniTabPanel("Data", icon = icon("table"),
                    miniContentPanel(tableOutput("table"))
@@ -39,25 +46,12 @@ cap_app <- function() {
 
   server <- function(input, output, session) {
 
-    observe({
-      if("Select all" %in% input$country)
-        selected_country=allchoices_country[-1] # choose all the choices _except_ "Select All"
-      else
-        selected_country=input$myselect # update the select input with choice selected by user
-      updateSelectInput(session, "country", selected = selected_country)
-    })
-
-    observe({
-      if("Select all" %in% input$category)
-        selected_category=allchoices_category[-1] # choose all the choices _except_ "Select All"
-      else
-        selected_category=input$myselect # update the select input with choice selected by user
-      updateSelectInput(session, "category", selected = selected_category)
-    })
-
       select_country <- reactive({
-      subset(data, category %in% input$category & Country %in% input$country, select =
-               c("Country", "Type", "Units", "from", "to"))
+      df <- data %>%
+        filter(category %in% input$category & Country %in% input$country) %>%
+        select(Country, Type, Units, from, to) %>%
+        arrange(Country, Type, from)
+      df
       })
 
 
@@ -66,8 +60,10 @@ cap_app <- function() {
     observeEvent(input$done, {
 
       # Emit a subset call if a dataset has been specified.
-      dfselect <- subset(data, category==input$category & Country==input$country, select =
-                      c("country_type", "url"))
+      dfselect <- data %>%
+        filter(category %in% input$category & Country %in% input$country) %>%
+        select(country_type, url) %>%
+        arrange(country_type)
 
       downloaded <- purrr::map(.x = dfselect$url, .f = ~read_csv(.x)) %>%
        set_names(dfselect$country_type)
