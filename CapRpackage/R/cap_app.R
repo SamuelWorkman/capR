@@ -19,7 +19,8 @@ cap_app <- function() {
   allchoices_category <- c("Select all", unique(data$category))
 
   ui <- miniPage(
-    gadgetTitleBar("Select CAP data"),
+    gadgetTitleBar("Select CAP data",
+                   right = miniTitleBarButton("done", "Download", primary = TRUE)),
     miniTabstripPanel(
       miniTabPanel("Parameters", icon = icon("sliders"),
                    miniContentPanel(
