@@ -14,17 +14,21 @@ cap_app <- function() {
     mutate(url = paste0("https://comparativeagendas.s3.amazonaws.com/datasetfiles/", datasetfilename),
            country_type = paste(Country, Type, sep = "_"))
 
-  allchoices <- c("Select all", unique(data$Country))
+  allchoices_country <- c("Select all", unique(data$Country))
+  allchoices_category <- c("Select all", unique(data$category))
 
   ui <- miniPage(
     gadgetTitleBar("Select CAP data"),
     miniTabstripPanel(
       miniTabPanel("Parameters", icon = icon("sliders"),
                    miniContentPanel(
-                     selectInput(inputId = "category", label = "Select type of activity",
-                                                choices = unique(data$category)),
-                     selectInput(inputId = "country", label = "Select country",
-                                 choices = allchoices,
+                     selectInput(inputId = "category",
+                                 label = "Select type of activity",
+                                 choices = allchoices_category,
+                                 multiple = TRUE, selectize = TRUE),
+                     selectInput(inputId = "country",
+                                 label = "Select country",
+                                 choices = allchoices_country,
                                  multiple = TRUE, selectize = TRUE)
       )),
       miniTabPanel("Data", icon = icon("table"),
@@ -37,14 +41,22 @@ cap_app <- function() {
 
     observe({
       if("Select all" %in% input$country)
-        selected_country=allchoices[-1] # choose all the choices _except_ "Select All"
+        selected_country=allchoices_country[-1] # choose all the choices _except_ "Select All"
       else
         selected_country=input$myselect # update the select input with choice selected by user
       updateSelectInput(session, "country", selected = selected_country)
     })
 
+    observe({
+      if("Select all" %in% input$category)
+        selected_category=allchoices_category[-1] # choose all the choices _except_ "Select All"
+      else
+        selected_category=input$myselect # update the select input with choice selected by user
+      updateSelectInput(session, "category", selected = selected_category)
+    })
+
       select_country <- reactive({
-      subset(data, category==input$category & Country %in% input$country, select =
+      subset(data, category %in% input$category & Country %in% input$country, select =
                c("Country", "Type", "Units", "from", "to"))
       })
 
