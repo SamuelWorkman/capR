@@ -1,4 +1,4 @@
-## Only run examples in interactive R sessions
+## App that downloads complete datasets as a list
 
 library(shiny)
 library(shinyWidgets)
@@ -7,7 +7,7 @@ library(leaflet)
 library(ggplot2)
 library(tidyverse)
 
-cap_app <- function() {
+cap_datalist <- function() {
 
   data <- jsonlite::fromJSON("https://www.comparativeagendas.net/api/datasets/metadata") %>%
     rename(Country = country, Type = name, Units = stats_observations,
