@@ -138,34 +138,26 @@ tabPanel("Downloading Data",
 server <- function(input, output, session) {
 
   reactive_df <-  eventReactive(input$choice, {
-    # input$file1 will be NULL initially. After the user selects
-    # and uploads a file, head of that data file by default,
-    # or all rows if selected, will be shown.
-    # req(input$file1)
-    # # when reading semicolon separated files,
-    # # having a comma separator causes `read.csv` to error
-    # tryCatch(
-    #   {df <- read.csv(input$file1$datapath,
-    #                    header = input$header,
-    #                    sep = input$sep,
-    #                    quote = input$quote)
-    #   },
-    #   error = function(e) {
-    #     # return a safeError if a parsing error occurs
-    #     stop(safeError(e))
-    #   }
-    # )
+    req(input$file1)
+    tryCatch(
+      {df <- read.csv(input$file1$datapath,
+                       header = input$header,
+                       sep = input$sep,
+                       quote = input$quote)
+      },
+      error = function(e) {
+        stop(safeError(e))
+      }
+    )
 
-    datadf
-
-    vars = names(datadf)
+    vars = names(df)
 
     updateSelectInput(session, "column1", desc[1], choices = vars)
     updateSelectInput(session, "column2", desc[2], choices = vars)
     updateSelectInput(session, "column3", desc[3], choices = vars)
     updateSelectInput(session, "column4", desc[4], choices = vars)
 
-    datadf
+    df
   })
 
   output$contents <- DT::renderDataTable({
