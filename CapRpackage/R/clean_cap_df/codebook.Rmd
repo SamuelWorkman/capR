@@ -1,0 +1,7 @@
+# `r input$title`   
+Author: Pinco   
+
+id = `r input$id_text`   
+year = `r input$year_text`   
+major_topic =`r input$major_text`   
+subtopic = `r input$subtopic_text`    
