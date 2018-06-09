@@ -4,7 +4,6 @@
 library(shiny)
 library(tidyverse)
 
-datadf <-read_delim("cap_qt_final_website.csv", ",", escape_double = FALSE, trim_ws = TRUE)
 desc <- c("This column records the unique identifier for each observation",
 "The year column records the year on which the event occurred",
 "This column records the Comparative Agendas Project’s major topic code",
