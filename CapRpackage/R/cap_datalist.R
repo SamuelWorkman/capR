@@ -85,4 +85,4 @@ cap_datalist <- function() {
   runGadget(ui, server)
 }
 
-trynew <- cap_app()
+# trynew <- cap_datalist()
