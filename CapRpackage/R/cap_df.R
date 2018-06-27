@@ -1,4 +1,4 @@
-## App that downloads complete datasets as a dataframe
+## App that downloads complete datasets as a list
 
 library(shiny)
 library(shinyWidgets)
@@ -38,9 +38,9 @@ cap_df <- function() {
                        multiple = TRUE,
                        options = list(`actions-box` = TRUE)
                      ))
-                   )),
+      )),
       miniTabPanel("Data", icon = icon("table"),
-                   miniContentPanel(DT::DTOutput("tabledt"))
+                   miniContentPanel(DT::dataTableOutput("table"))
       )
     )
   )
@@ -52,41 +52,40 @@ cap_df <- function() {
       updateSelectInput(session, "country", "Select country",
                         choices = unique(data$Country[data$category==input$category])))
 
-    select_country <- reactive({
+      select_country <- reactive({
+      df <- data %>%
+        filter(category %in% input$category & Country %in% input$country) %>%
+        select(Country, Type, Units, from, to) %>%
+        arrange(Country, Type, from)
+      df
+      })
+
+
+    output$table <- DT::renderDataTable(DT::datatable(select_country(),
+                                                      options = list(paging = FALSE)))
+
+    observeEvent(input$done, {
+
+      # Emit a subset call if a dataset has been specified.
       dfselect <- data %>%
         filter(category %in% input$category & Country %in% input$country) %>%
         select(country_type, url) %>%
         arrange(country_type)
-      # 
-      # dfselect <- filter(data, Country=="Italy") %>%
-      # select(country_type, url)
 
-      df <- purrr::map(.x = dfselect$url, .f = ~read_csv(.x)) %>%
-        set_names(dfselect$country_type) %>%  
+      downloaded <- purrr::map(.x = dfselect$url, .f = ~read_csv(.x)) %>%
+        set_names(dfselect$country_type) %>%
         purrr::map(.x = ., possibly(.f = ~dplyr::select(., id, year, subtopic, majortopic), otherwise = NA)) %>%
         purrr::map(.x = ., .f = ~dplyr::mutate(., id = ifelse(is.numeric(id), as.character(id), id))) %>%
         purrr::map_df(., I, .id ="dataframe")
-      df
-    })
 
-
-    output$tabledt <- DT::renderDT(DT::datatable(select_country(),
-                                      options = list(searching = FALSE,
-                                               pageLength = 5,
-                                               columnDefs = list(list(width = '20%',
-                                              targets = list(1, 2)))
-                                                      ),
-                                        rownames = FALSE))
-
-    observeEvent(input$done, {
 
       stopApp(
-        select_country()
-      )
+        downloaded
+        )
     })
   }
 
   runGadget(ui, server)
 }
 
-# try <- cap_df()
+# trynew <- cap_df()
