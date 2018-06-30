@@ -6,6 +6,7 @@ library(miniUI)
 library(leaflet)
 library(ggplot2)
 library(tidyverse)
+library(DT)
 
 cap_df <- function() {
 
@@ -88,4 +89,4 @@ cap_df <- function() {
   runGadget(ui, server)
 }
 
-# trynew <- cap_df()
+# cap_data <- cap_df()
